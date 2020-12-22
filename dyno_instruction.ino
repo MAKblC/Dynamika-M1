@@ -10,11 +10,11 @@ VL53L0X lox1;
 #define EN_MASK             0x08
 #define DEF_CHANNEL         0x00
 #define MAX_CHANNEL         0x08
-// I2C порт 0x07 - выводы D4 (SDA), D5 (SCL)
-// I2C порт 0x06 - выводы D6 (SDA), D7 (SCL)
-// I2C порт 0x05 - выводы D8 (SDA), D9 (SCL)
-// I2C порт 0x04 - выводы D10 (SDA), D11 (SCL)
-// I2C порт 0x03 - выводы D12 (SDA), D13 (SCL)
+// I2C порт 0x07 - выводы gp16 (SDA), gp17 (SCL)
+// I2C порт 0x06 - выводы gp4 (SDA), gp13 (SCL)
+// I2C порт 0x05 - выводы gp14 (SDA), gp15 (SCL)
+// I2C порт 0x04 - выводы gp5 (SDA), gp23 (SCL)
+// I2C порт 0x03 - выводы gp19 (SDA), gp18 (SCL)
 
 #define LONG_RANGE // режим дальности для датчика расстояния
 
