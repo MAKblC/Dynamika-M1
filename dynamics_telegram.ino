@@ -35,13 +35,11 @@ Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1();
 #define EN_MASK             0x08
 #define DEF_CHANNEL         0x00
 #define MAX_CHANNEL         0x08
-/*
-I2C порт 0x07 - выводы GP16 (SDA), GP17 (SCL)
-I2C порт 0x06 - выводы GP4 (SDA), GP13 (SCL)
-I2C порт 0x05 - выводы GP14 (SDA), GP15 (SCL)
-I2C порт 0x04 - выводы GP5 (SDA), GP23 (SCL)
-I2C порт 0x03 - выводы GP18 (SDA), GP19 (SCL)
-*/
+// I2C порт 0x07 - выводы GP16 (SDA), GP17 (SCL)
+// I2C порт 0x06 - выводы GP4 (SDA), GP13 (SCL)
+// I2C порт 0x05 - выводы GP14 (SDA), GP15 (SCL)
+// I2C порт 0x04 - выводы GP5 (SDA), GP23 (SCL)
+// I2C порт 0x03 - выводы GP18 (SDA), GP19 (SCL)
 
 #define LONG_RANGE // режим дальности для датчика расстояния
 
