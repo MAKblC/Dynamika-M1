@@ -4,7 +4,7 @@
 
 ![dinamica](https://mgbot.ru/upload/iblock/140/1402ce7952befa4a645769cbb7238426.jpg)
 
-[Ссылка на сайте производителя](https://mgbot.ru/catalog/obrazovatelnye_nabory_iot/nabor_umnaya_teplitsa_yotik_m2/](https://mgbot.ru/catalog/uchebnaya_robototekhnika/nabor_dinamika_yotik_m1/)
+[Ссылка на сайте производителя](https://mgbot.ru/catalog/uchebnaya_robototekhnika/nabor_dinamika_yotik_m1/)
 
 [Ссылка на образовательном сайте](https://мгбот.рф/podrobno#dinamica)
 
