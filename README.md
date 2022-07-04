@@ -23,3 +23,4 @@
 | vl53l0x-arduino.zip   |библиотека для MGS-D10|
 | dynamics_telegram.ino | скетч для Telegram|
 | testdina.ino  |скетч для тестирования устройств| 
+| testdina_color.ino  |скетч для тестирования устройств с датчиком цвета в комплекте|
