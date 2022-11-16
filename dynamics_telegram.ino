@@ -5,10 +5,10 @@
 #include <Wire.h>
 
 // параметры сети
-#define WIFI_SSID "XXXXXX"
-#define WIFI_PASSWORD "XXXXXXXXXX"
+#define WIFI_SSID "XXXXX"
+#define WIFI_PASSWORD "XXXXXXXXX"
 // токен вашего бота
-#define BOT_TOKEN "XXXXXXXX:XXXXXXXXXXXXXXX"
+#define BOT_TOKEN "XXXXXXXXXXXXXXXXXXXXXX"
 
 const unsigned long BOT_MTBS = 1000; // период обновления сканирования новых сообщений
 
@@ -28,10 +28,47 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x70); // адрес пл�
 #include <VL53L0X.h> // библиотека для датчика MGS-D20
 VL53L0X lox1;
 
-#include <Adafruit_LSM9DS1.h>                       // гироскоп
-Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1();
+// Выберите гироскоп или датчик цвета в вашей сборке (ненужные занесите в комментарии)
+//#define MGS_A9 1
+#define MGS_CLM60 1
+//#define MGS_A6 1
 
-#define I2C_HUB_ADDR        0x70 // настройки I2C для платы MGB-I2C63EN
+/////////////////// гироскоп и датчик цвета ///////////////////
+#ifdef MGS_A9
+#include <Adafruit_LSM9DS1.h>
+Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1();
+#endif
+#ifdef MGS_A6
+#include <MPU6050.h>
+MPU6050 mpu;
+#endif
+#ifdef MGS_CLM60
+#include "Adafruit_APDS9960.h"
+Adafruit_APDS9960 apds9960;
+#endif
+
+// Выберите модуль светодиодов в вашей сборке (ненужные занесите в комментарии)
+#define MGL_RGB1EN 1
+//#define MGL_RGB2 1
+//#define MGL_RGB3 1
+
+/////////////////// модуль светодиодов ///////////////////
+#ifdef MGL_RGB1EN
+#include "TLC59108.h" // библиотека для модуля MGL_RGB1
+#define HW_RESET_PIN 0 // Только програмнный сброс
+#define I2C_ADDR TLC59108::I2C_ADDR::BASE
+TLC59108 leds(I2C_ADDR + 7); // Без перемычек добавляется 3 бита адреса
+#endif
+#ifdef MGL_RGB2
+#include <PCA9634.h>
+PCA9634 leds1(0x4D); // (также попробуйте просканировать адрес: https://github.com/MAKblC/Codes/tree/master/I2C%20scanner)
+#endif
+#ifdef MGL_RGB3
+#include <PCA9634.h>
+PCA9634 testModule(0x08); // (также попробуйте просканировать адрес: https://github.com/MAKblC/Codes/tree/master/I2C%20scanner)
+#endif
+
+#define I2C_HUB_ADDR        0x70 // настройки I2C для платы MGB_I2C63EN
 #define EN_MASK             0x08
 #define DEF_CHANNEL         0x00
 #define MAX_CHANNEL         0x08
@@ -42,11 +79,6 @@ Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1();
 // I2C порт 0x03 - выводы GP18 (SDA), GP19 (SCL)
 
 #define LONG_RANGE // режим дальности для датчика расстояния
-
-#include "TLC59108.h" // библиотека для модуля MGL-RGB1
-#define HW_RESET_PIN 0 // Только програмнный сброс
-#define I2C_ADDR TLC59108::I2C_ADDR::BASE
-TLC59108 leds(I2C_ADDR + 7); // Без перемычек добавляется 3 бита адреса
 
 #include <Adafruit_MCP4725.h>    // библиотека для MGB-BUZ1
 Adafruit_MCP4725 buzzer;
@@ -82,15 +114,75 @@ void setup()
   pwm.setPWM(11, 0, 4096);
 
   setBusChannel(0x06);
+#ifdef MGS_A9
   if (!lsm.begin())
   {
     Serial.println("Oops ... unable to initialize the LSM9DS1. Check your wiring!");
-    while (1);
   }
   Serial.println("Found LSM9DS1 9DOF");
   lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_2G);
   lsm.setupMag(lsm.LSM9DS1_MAGGAIN_4GAUSS);
   lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_245DPS);
+#endif
+#ifdef MGS_A6
+  while (!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G, 0x69))
+  {
+    Serial.println("MGS_A6 Не обнаружен! Проверьте адрес!"); // (также попробуйте просканировать адрес: https://github.com/MAKblC/Codes/tree/master/I2C%20scanner)
+    delay(500);
+  }
+  // Calibrate gyroscope. The calibration must be at rest.
+  // If you don't want calibrate, comment this line.
+  mpu.calibrateGyro();
+
+  // Set threshold sensivty. Default 3.
+  // If you don't want use threshold, comment this line or set 0.
+  mpu.setThreshold(3);
+
+  // Check settings
+  Serial.println();
+
+  Serial.print(" * Sleep Mode:        ");
+  Serial.println(mpu.getSleepEnabled() ? "Enabled" : "Disabled");
+
+  Serial.print(" * Clock Source:      ");
+  switch (mpu.getClockSource())
+  {
+    case MPU6050_CLOCK_KEEP_RESET:     Serial.println("Stops the clock and keeps the timing generator in reset"); break;
+    case MPU6050_CLOCK_EXTERNAL_19MHZ: Serial.println("PLL with external 19.2MHz reference"); break;
+    case MPU6050_CLOCK_EXTERNAL_32KHZ: Serial.println("PLL with external 32.768kHz reference"); break;
+    case MPU6050_CLOCK_PLL_ZGYRO:      Serial.println("PLL with Z axis gyroscope reference"); break;
+    case MPU6050_CLOCK_PLL_YGYRO:      Serial.println("PLL with Y axis gyroscope reference"); break;
+    case MPU6050_CLOCK_PLL_XGYRO:      Serial.println("PLL with X axis gyroscope reference"); break;
+    case MPU6050_CLOCK_INTERNAL_8MHZ:  Serial.println("Internal 8MHz oscillator"); break;
+  }
+
+  Serial.print(" * Gyroscope:         ");
+  switch (mpu.getScale())
+  {
+    case MPU6050_SCALE_2000DPS:        Serial.println("2000 dps"); break;
+    case MPU6050_SCALE_1000DPS:        Serial.println("1000 dps"); break;
+    case MPU6050_SCALE_500DPS:         Serial.println("500 dps"); break;
+    case MPU6050_SCALE_250DPS:         Serial.println("250 dps"); break;
+  }
+
+  Serial.print(" * Gyroscope offsets: ");
+  Serial.print(mpu.getGyroOffsetX());
+  Serial.print(" / ");
+  Serial.print(mpu.getGyroOffsetY());
+  Serial.print(" / ");
+  Serial.println(mpu.getGyroOffsetZ());
+
+  Serial.println();
+#endif
+#ifdef MGS_CLM60
+  if (!apds9960.begin()) {
+    Serial.println("Failed to initialize device!");
+  }
+  // Инициализация режимов работы датчика
+  apds9960.enableColor(true);
+  apds9960.enableProximity(true);
+#endif
+
   setBusChannel(0x07); // 7ой канал
   buzzer.begin(0x61); // С перемычкой адрес будет 0x60
   buzzer.setVoltage(0, false);   // выключение звука
@@ -98,6 +190,7 @@ void setup()
   setBusChannel(0x05); //5ый канал
   lox1.init();
   lox1.setTimeout(500);
+
 #if defined LONG_RANGE
   // lower the return signal rate limit (default is 0.25 MCPS)
   lox1.setSignalRateLimit(0.1);
@@ -114,8 +207,39 @@ void setup()
 #endif
 
   setBusChannel(0x01); // первый канал
+#ifdef MGL_RGB1EN
   leds.init(HW_RESET_PIN);
   leds.setLedOutputMode(TLC59108::LED_MODE::PWM_IND);
+#endif
+#ifdef MGL_RGB2
+  leds1.begin();
+  for (int channel = 0; channel < leds1.channelCount(); channel++)
+  {
+    leds1.setLedDriverMode(channel, PCA9634_LEDOFF); // выключить все светодиоды в режиме 0/1
+    leds1.write1(channel, 0x00); // выключить все светодиоды в режиме ШИМ
+    delay(200);
+    leds1.setLedDriverMode(channel, PCA9634_LEDPWM); // установка режима ШИМ
+  }
+#endif
+#ifdef MGL_RGB3
+  testModule.begin();
+  for (int channel = 0; channel < testModule.channelCount(); channel++)
+  {
+    testModule.setLedDriverMode(channel, PCA9634_LEDOFF); // выключить все светодиоды в режиме 0/1
+  }
+  for (int channel = 0; channel < testModule.channelCount(); channel++)
+  {
+    testModule.setLedDriverMode(channel, PCA9634_LEDON);
+    Serial.println(channel);
+    delay(500);
+    testModule.setLedDriverMode(channel, PCA9634_LEDOFF);
+    delay(500);
+  }
+  for (int channel = 0; channel < testModule.channelCount(); channel++)
+  {
+    testModule.setLedDriverMode(channel, PCA9634_LEDPWM); // установка режима ШИМ (0-255)
+  }
+#endif
 }
 
 // функция обработки новых сообщений
@@ -138,16 +262,42 @@ void handleNewMessages(int numNewMessages)
     {
       setBusChannel(0x05);
       float dist = lox1.readRangeSingleMillimeters(); // снимаем данные с датчика расстояния
+
       setBusChannel(0x06);
+      String welcome = "Показания датчиков:\n";
+      welcome += "Distance: " + String(dist, 0) + " mm\n";
+#ifdef MGS_A9
       lsm.read(); // данные гироскопа, акселерометра и магнетометра
       sensors_event_t a, m, g, temp;
       lsm.getEvent(&a, &m, &g, &temp);
-
-      String welcome = "Показания датчиков:\n";
-      welcome += "Distance: " + String(dist, 0) + " mm\n";
       welcome += "aX: " + String(a.acceleration.x, 1) + " \n";
       welcome += "aY: " + String(a.acceleration.y, 1) + " \n";
       welcome += "aZ: " + String(a.acceleration.z, 1) + " \n";
+#endif
+#ifdef MGS_A6
+      Vector rawGyro = mpu.readRawGyro(); // Сырые значения
+      Vector normGyro = mpu.readNormalizeGyro(); // Преобразованные значения
+      welcome += "aX: " + String(normGyro.XAxis, 1) + " \n";
+      welcome += "aY: " + String(normGyro.YAxis, 1) + " \n";
+      welcome += "aZ: " + String(normGyro.ZAxis, 1) + " \n";
+#endif
+#ifdef MGS_CLM60
+      uint16_t red_data   = 0;
+      uint16_t green_data = 0;
+      uint16_t blue_data  = 0;
+      uint16_t clear_data = 0;
+      uint16_t prox_data  = 0;
+      // Определение цвета
+      while (!apds9960.colorDataReady()) {
+        delay(5);
+      }
+      apds9960.getColorData(&red_data, &green_data, &blue_data, &clear_data);
+      // Определение близости препятствия
+      prox_data = apds9960.readProximity();
+      welcome += "RED   = " + String(red_data) + " \n";
+      welcome += "GREEN = " + String(green_data) + " \n";
+      welcome += "BLUE  = " + String(blue_data) + " \n";
+#endif
       bot.sendMessage(chat_id, welcome, "Markdown");
     }
 
@@ -169,14 +319,14 @@ void handleNewMessages(int numNewMessages)
     }
     if ((text == "/light") || (text == "light"))
     {
-      setBusChannel(0x01);
+      setBusChannel(0x06);
       leds.setBrightness(6, 0x99);
       leds.setBrightness(0, 0x99);
       bot.sendMessage(chat_id, "Свет включен", "");
     }
     if ((text == "/off") || (text == "off"))
     {
-      setBusChannel(0x01);
+      setBusChannel(0x06);
       leds.setBrightness(6, 0x00);
       leds.setBrightness(0, 0x00);
       leds.setBrightness(3, 0x00);
@@ -186,21 +336,33 @@ void handleNewMessages(int numNewMessages)
     }
     if ((text == "/color") || (text == "color"))
     {
-      setBusChannel(0x01);
+      setBusChannel(0x06);
+#ifdef MGL_RGB1EN
       leds.setBrightness(3, random(0, 255));
       leds.setBrightness(2, random(0, 255));
       leds.setBrightness(5, random(0, 255));
+#endif
+#ifdef MGL_RGB2
+      leds1.write1(3, random(0, 255));
+      leds1.write1(7, random(0, 255));
+      leds1.write1(4, random(0, 255));
+#endif
+#ifdef MGL_RGB3
+      testModule.write1(3, random(0, 255));
+      testModule.write1(2, random(0, 255));
+      testModule.write1(5, random(0, 255));
+#endif
       bot.sendMessage(chat_id, "Включен случайный цвет", "");
     }
     if ((text == "/stop") || (text == "stop"))
     {
-       bot.sendMessage(chat_id, "Моторы остановлены", "");
+      bot.sendMessage(chat_id, "Моторы остановлены", "");
       motorA_setpower(0x00, false);
       motorB_setpower(0x00, false);
     }
     if ((text == "/sound") || (text == "sound"))
     {
-       bot.sendMessage(chat_id, "Бииип бууп", "");
+      bot.sendMessage(chat_id, "Бииип бууп", "");
       setBusChannel(0x07);
       for (int i = 0; i < 400; i++) { // звук
         buzzer.setVoltage(vol1, false);
@@ -237,8 +399,6 @@ void handleNewMessages(int numNewMessages)
     }
   }
 }
-
-
 
 void loop() // вызываем функцию обработки сообщений через определенный период
 {
