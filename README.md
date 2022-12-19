@@ -12,7 +12,7 @@
 
 | Название    | Описание |
 | ----------- | -----------|
-|Adafruit-PWM-Servo-Driver-Library-master.zip | библиотека для  MGS-D1015|
+|Adafruit-PWM-Servo-Driver-Library-master.zip | библиотека для  моторов|
 |  Adafruit_APDS9960-master.zip     | библиотека для MGS-CLM60 |
 |  Adafruit_LSM9DS1-master.zip     | библиотека для MGS-A9 |
 | Adafruit_Unified_Sensor.zip     | библиотека для MGS-A9 |
