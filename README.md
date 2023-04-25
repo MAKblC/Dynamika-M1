@@ -20,7 +20,7 @@
 | Adafruit_Unified_Sensor.zip     | библиотека для MGS-A9 |
 | Adafruit_MCP4725.zip   | библиотека для MGB-BUZ1 |
 |Arduino-INA226.zip | библиотека для датчика тока и напряжения |
-|  Arduino-MPU6050-master.zip     | библиотека для MGS-A6 |
+|  Adafruit_MPU6050-master.zip     | библиотека для MGS-A6 |
 | ESP32-IRremote.zip    |библиотека для ИК-приемника|
 | PCA9634-0.2.1.zip   | библиотека для MGL-RGB2/3|
 | PCA9536_modified.zip  | библиотека для драйвера моторов|
