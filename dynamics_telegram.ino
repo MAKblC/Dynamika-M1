@@ -227,22 +227,22 @@ void handleNewMessages(int numNewMessages)
       float dist = lox1.readRangeSingleMillimeters(); // снимаем данные с датчика расстояния
 
       setBusChannel(0x06);
-      String welcome = "Показания датчиков:\n";
-      welcome += "Distance: " + String(dist, 0) + " mm\n";
+      String welcome = "Показания датчиков:\n-------------------------------------------\n";
+      welcome += "📏 Расстояние: " + String(dist, 0) + " мм\n";
 #ifdef MGS_A9
       lsm.read(); // данные гироскопа, акселерометра и магнетометра
       sensors_event_t a, m, g, temp;
       lsm.getEvent(&a, &m, &g, &temp);
-      welcome += "aX: " + String(a.acceleration.x, 1) + " \n";
-      welcome += "aY: " + String(a.acceleration.y, 1) + " \n";
-      welcome += "aZ: " + String(a.acceleration.z, 1) + " \n";
+      welcome += "aX: " + String(a.acceleration.x, 1) + " м/с^2\n";
+      welcome += "aY: " + String(a.acceleration.y, 1) + " м/с^2\n";
+      welcome += "aZ: " + String(a.acceleration.z, 1) + " м/с^2\n";
 #endif
 #ifdef MGS_A6
       sensors_event_t a, g, temp;
       mpu.getEvent(&a, &g, &temp);
-      welcome += "aX: " + String(a.acceleration.x) + " m/s^2\n";
-      welcome += "aY: " + String(a.acceleration.y) + " m/s^2\n";
-      welcome += "aZ: " + String(a.acceleration.z) + " m/s^2\n";
+      welcome += "aX: " + String(a.acceleration.x) + " м/с^2\n";
+      welcome += "aY: " + String(a.acceleration.y) + " м/с^2\n";
+      welcome += "aZ: " + String(a.acceleration.z) + " м/с^2\n";
 #endif
 #ifdef MGS_CLM60
       uint16_t red_data   = 0;
@@ -257,9 +257,9 @@ void handleNewMessages(int numNewMessages)
       apds9960.getColorData(&red_data, &green_data, &blue_data, &clear_data);
       // Определение близости препятствия
       prox_data = apds9960.readProximity();
-      welcome += "RED   = " + String(red_data) + " \n";
-      welcome += "GREEN = " + String(green_data) + " \n";
-      welcome += "BLUE  = " + String(blue_data) + " \n";
+      welcome += "🟥 RED   = " + String(red_data) + " \n";
+      welcome += "🟩 GREEN = " + String(green_data) + " \n";
+      welcome += "🟦 BLUE  = " + String(blue_data) + " \n";
 #endif
       bot.sendMessage(chat_id, welcome, "Markdown");
     }
