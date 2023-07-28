@@ -2,7 +2,7 @@
 
 Данный набор является отличным связующим звеном для создания целой автоматизированной автономной системы.
 
-![dinamica](https://mgbot.ru/upload/iblock/140/1402ce7952befa4a645769cbb7238426.jpg)
+![dinamica](https://mgbot.ru/upload/iblock/a0b/rapo4fzoh5i6nmg5pdej6ahppr1ino0j.jpg)
 
 [Ссылка на сайте производителя](https://mgbot.ru/catalog/uchebnaya_robototekhnika/nabor_dinamika_yotik_m1/)
 
