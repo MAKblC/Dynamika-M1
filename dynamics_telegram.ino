@@ -61,7 +61,7 @@ Adafruit_APDS9960 apds9960;
 #include "TLC59108.h" // библиотека для модуля MGL_RGB1
 #define HW_RESET_PIN 0 // Только програмнный сброс
 #define I2C_ADDR TLC59108::I2C_ADDR::BASE
-TLC59108 leds(I2C_ADDR + 7); // Без перемычек добавляется 3 бита адреса
+TLC59108 leds(I2C_ADDR + 0); // Без перемычек добавляется 3 бита адреса
 #endif
 #ifdef MGL_RGB2
 #include <PCA9634.h>
@@ -150,7 +150,7 @@ void setup()
 #endif
 
   setBusChannel(0x07); // 7ой канал
-  buzzer.begin(0x61); // С перемычкой адрес будет 0x60
+  buzzer.begin(0x60); // С перемычкой адрес будет 0x60
   buzzer.setVoltage(0, false);   // выключение звука
 
   setBusChannel(0x05); //5ый канал
