@@ -24,6 +24,7 @@
 |  Adafruit_BusIO-master.zip    | библиотека для MGS-A6 |
 |  dinaDemo.ino    | скетч для локального сервера |
 | ESP32-IRremote.zip    |библиотека для ИК-приемника|
+| GyverPortal.zip   | библиотека для локального сервера|
 | PCA9634-0.2.1.zip   | библиотека для MGL-RGB2/3|
 | PCA9536_modified.zip  | библиотека для драйвера моторов|
 | TLC59108_modified.zip   |библиотека для MGL-RGB1|
