@@ -22,7 +22,7 @@
 |Arduino-INA226.zip | библиотека для датчика тока и напряжения |
 |  Adafruit_MPU6050-master.zip     | библиотека для MGS-A6 |
 |  Adafruit_BusIO-master.zip    | библиотека для MGS-A6 |
-|  dinaDemo.ino    | скетч для локальнго сервера |
+|  dinaDemo.ino    | скетч для локального сервера |
 | ESP32-IRremote.zip    |библиотека для ИК-приемника|
 | PCA9634-0.2.1.zip   | библиотека для MGL-RGB2/3|
 | PCA9536_modified.zip  | библиотека для драйвера моторов|
