@@ -1,19 +1,24 @@
+/*
+поворот Динамики на 90 градусов с паузой в секунду
+Используется MGS-A6 с подключением в 21/22
+*/
+
 #include <Wire.h>
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 MPU6050 mpu;
 
 #include <Adafruit_PWMServoDriver.h>
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x70);  // адрес зависит от перемычек на плате (также попробуйте просканировать адрес: https://github.com/MAKblC/Codes/tree/master/I2C%20scanner)
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x70);  // адрес зависит от перемычек на плате
 
 uint8_t fifoBuffer[45];  // буфер
-int turnSpeed = 30;
-int compensation = 10;
+int turnSpeed = 30; // скорость поворота
+int compensation = 10; // компенсация поворота (зависит от скорости поворота)
+
 void setup() {
   Serial.begin(115200);
   Wire.begin();
-  //Wire.setClock(1000000UL);   // разгоняем шину на максимум
-
+ 
   // инициализация DMP
   mpu.initialize();
   mpu.dmpInitialize();
@@ -31,7 +36,7 @@ void setup() {
 }
 
 void loop() {
-  angle(false, 90);
+  angle(false, 90); // повернуть по часовой на 90
   delay(1000);
 }
 
@@ -41,11 +46,13 @@ void angle(bool side, int angle) {
   int currentAngle = angleMeasure();
   // если нужно повернуть по часовой (направо)
   if (side == false) {
-    // берем остаток от круга и поворачиваем пока разница не станет меньше 10 но больше 0
+    // берем остаток от круга и поворачиваем, пока разница не станет меньше 10, но больше 0
     while (((currentAngle + angle) % 360) - angleMeasure() > compensation or ((currentAngle + angle) % 360) - angleMeasure() < 0) {
-      // motorA_setpower(turnSpeed, side);
-      motorB_setpower(turnSpeed * 1.2, side);
+      // поворот на одном колесе
+      // motorA_setpower(turnSpeed, side); // расскомментировать чтоб поворачивать вокруг оси
+      motorB_setpower(turnSpeed, side);
     }
+    // другой алгоритм поворота по часовой
     /*if (currentAngle + angle < 360) {
       while (currentAngle + angle - angleMeasure() > 10) {
         motorA_setpower(5, side);
@@ -59,18 +66,20 @@ void angle(bool side, int angle) {
     }*/
   } else {
     // если поворачиваем налево (против часовой)
-    // в простой ситуации когда нужно повернуться на угол меньший чем текущий
+    // в простой ситуации, когда нужно повернуться на угол меньший, чем текущий
     if (currentAngle > angle) {
       // поворачиваем пока разница между углами не станет меньше -10
       while (currentAngle - angle - angleMeasure() < -(compensation)) {
-        //  motorA_setpower(turnSpeed, side);
-        motorB_setpower(turnSpeed * 1.2, side);
+        // поворот на одном колесе
+        //  motorA_setpower(turnSpeed, side); // расскомментировать чтоб поворачивать вокруг оси
+        motorB_setpower(turnSpeed, side);
       }
       // в сложной ситуации, когда нужно осилить переход через 0
     } else {
       while (360 - (angle - currentAngle) - angleMeasure() > 0 or 360 - (angle - currentAngle) - angleMeasure() < -(compensation)) {
-        //motorA_setpower(turnSpeed, side);
-        motorB_setpower(turnSpeed * 1.2, side);
+        // поворот на одном колесе
+        //motorA_setpower(turnSpeed, side); // расскомментировать чтоб поворачивать вокруг оси
+        motorB_setpower(turnSpeed, side);
       }
     }
   }
@@ -97,7 +106,6 @@ int angleMeasure(void) {
     return angle;
   }
 }
-
 
 void motorA_setpower(float pwr, bool invert) {
   // Проверка, инвертирован ли мотор
