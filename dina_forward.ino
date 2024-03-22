@@ -1,15 +1,21 @@
+/*
+Езда Динамики по определенному курсу (синхронизация для езды прямо)
+Используется MGS-A6, подключенный в порт 19/18 (setBusChannel(0x03))
+*/
+
 #include <Wire.h>
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 MPU6050 mpu;
 
 #include <Adafruit_PWMServoDriver.h>
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x70);  // адрес зависит от перемычек на плате (также попробуйте просканировать адрес: https://github.com/MAKblC/Codes/tree/master/I2C%20scanner)
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x70);  // адрес зависит от перемычек на плате 
 
 uint8_t fifoBuffer[45];  // буфер
-int error;
-int previousAngle;
+int error; // ошибка для пропорционального регулятора
+int previousAngle; // угол для ориентирования
 
+// константы для платы расширения
 #define I2C_HUB_ADDR 0x70
 #define EN_MASK 0x08
 #define DEF_CHANNEL 0x00
@@ -33,13 +39,17 @@ void setup() {
   pwm.setPWM(10, 0, 4096);
   pwm.setPWM(11, 0, 4096);
   delay(5000);
-  previousAngle = 90;  // ставим изначальный угол как курс
+  previousAngle = 90;  // ставим ориентацию на 90 градусов, при стартовых 180
 }
 
 void loop() {
   setBusChannel(0x03);
+  // измеряем текущий угол
   int currentAngle = angleMeasure();
+  // ошибка = разница заданного курса и текущего
   error = currentAngle - previousAngle;
+  // разница добавляется и отнимается в скорость моторов
+  // данный простой П-регулятор можно регулировать с коэффициентами либо добавлять -И и -Д составляющие
   motorA_setpower(50 + error, true);
   motorB_setpower(50 - error, false);
 }
