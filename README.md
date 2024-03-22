@@ -29,6 +29,9 @@
 | PCA9536_modified.zip  | библиотека для драйвера моторов|
 | TLC59108_modified.zip   |библиотека для MGL-RGB1|
 | vl53l0x-arduino.zip   |библиотека для MGS-D10|
+| dina_turn.ino | скетч для поврота на угол|
+| dina_square.ino | скетч для езды по квадрату|
+| dina_forward.ino | скетч для удержания прямой линии|
 | dynamics_telegram.ino | скетч для Telegram|
 | testdina.ino  |скетч для тестирования устройств| 
 | testdina_color.ino  |скетч для тестирования устройств с датчиком цвета в комплекте|
